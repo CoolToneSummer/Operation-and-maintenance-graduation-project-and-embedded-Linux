@@ -1,0 +1,131 @@
+version: "3.6"
+services:
+  redis-master1: 
+     image: redis:latest # 基础镜像
+     container_name: redis-master1 # 容器服务名
+     working_dir: /config # 工作目录
+     environment: # 环境变量
+       - PORT=6391 # 跟 config/nodes-6391.conf 里的配置一样的端口
+     ports: # 映射端口，对外提供服务
+       - "6391:6391" # redis 的服务端口
+       - "16391:16391" # redis 集群监控端口
+     stdin_open: true # 标准输入打开
+     networks: # docker 网络设置
+        redis-master:
+            ipv4_address: 172.60.0.2
+     tty: true
+     privileged: true # 拥有容器内命令执行的权限
+     volumes: ["./config:/config"] # 映射数据卷，配置目录
+     entrypoint: # 设置服务默认的启动程序
+       - /bin/bash
+       - redis.sh
+  redis-master2:
+       image: redis:latest
+       working_dir: /config
+       container_name: redis-master2
+       environment:
+              - PORT=6392
+       networks:
+          redis-master:
+             ipv4_address: 172.60.0.3
+       ports:
+         - "6392:6392"
+         - "16392:16392"
+       stdin_open: true
+       tty: true
+       privileged: true
+       volumes: ["./config:/config"]
+       entrypoint:
+         - /bin/bash
+         - redis.sh
+  redis-master3:
+       image: redis:latest
+       container_name: redis-master3
+       working_dir: /config
+       environment:
+              - PORT=6393
+       networks:
+          redis-master:
+            ipv4_address: 172.60.0.4
+       ports:
+         - "6393:6393"
+         - "16393:16393"
+       stdin_open: true
+       tty: true
+       privileged: true
+       volumes: ["./config:/config"]
+       entrypoint:
+         - /bin/bash
+         - redis.sh
+  redis-slave1:
+       image: redis:latest
+       container_name: redis-slave1
+       working_dir: /config
+       environment:
+            - PORT=6394
+       networks:
+          redis-slave:
+             ipv4_address: 172.70.0.2
+       ports:
+         - "6394:6394"
+         - "16394:16394"
+       stdin_open: true
+       tty: true
+       privileged: true
+       volumes: ["./config:/config"]
+       entrypoint:
+         - /bin/bash
+         - redis.sh
+  redis-salve2:
+       image: redis:latest
+       working_dir: /config
+       container_name: redis-salve2
+       environment:
+             - PORT=6395
+       ports:
+         - "6395:6395"
+         - "16395:16395"
+       stdin_open: true
+       networks:
+          redis-slave:
+              ipv4_address: 172.70.0.3
+       tty: true
+       privileged: true
+       volumes: ["./config:/config"]
+       entrypoint:
+         - /bin/bash
+         - redis.sh
+  redis-salve3:
+       image: redis:latest
+       container_name: redis-slave3
+       working_dir: /config
+       environment:
+          - PORT=6396
+       ports:
+         - "6396:6396"
+         - "16396:16396"
+       stdin_open: true
+       networks:
+          redis-slave:
+            ipv4_address: 172.70.0.4
+       tty: true
+       privileged: true
+       volumes: ["./config:/config"]
+       entrypoint:
+         - /bin/bash
+         - redis.sh
+networks:
+  redis-master:
+     driver: bridge
+     ipam:
+       driver: default
+       config:
+          -
+           subnet: 172.60.0.0/16
+  redis-slave:
+       driver: bridge
+       ipam:
+         driver: default
+         config:
+            -
+             subnet: 172.70.0.0/16

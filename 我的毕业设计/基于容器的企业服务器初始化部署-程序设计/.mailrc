@@ -1,0 +1,6 @@
+set from=994704038@qq.com
+set smtp=smtp.qq.com
+set smtp-auth-user=994704038@qq.com
+set smtp-auth-password=wslumbaykipubbba
+set smtp-auth=login
+set ssl-verify=ignore

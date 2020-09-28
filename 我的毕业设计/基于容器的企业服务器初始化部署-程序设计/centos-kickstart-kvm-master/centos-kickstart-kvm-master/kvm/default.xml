@@ -1,0 +1,26 @@
+<network>
+
+    <!-- 此虚拟网卡名称-->
+  <name>default</name>
+  <uuid>b024a020-6590-479f-b893-3b7451247936</uuid>
+  
+  <!-- nat转发端口-->
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  
+  <!-- kvm在宿主机的虚拟网卡名称-->
+  <bridge name='virbr0' stp='on' delay='0'/>
+  
+  <!-- 宿主机mac-->
+  <mac address='52:54:00:18:04:95'/>
+  
+  <!-- 使用此网卡的KVM， 会被分配的ip段-->
+  <ip address='10.0.0.1' netmask='255.0.0.0'>
+    <dhcp>
+      <range start='10.0.0.10' end='10.0.0.254'/>
+    </dhcp>
+  </ip>
+</network>
